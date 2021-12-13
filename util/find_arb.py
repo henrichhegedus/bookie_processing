@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import unidecode
 import yaml
-from Database import Database
+from database import Database
 
 stream = open("db_config.yaml", 'r')
 db_config = yaml.load(stream,Loader=yaml.FullLoader)
