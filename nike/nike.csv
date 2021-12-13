@@ -1,0 +1,47 @@
+,competition,match,date,time,odds,bet_ids
+0, ATP Cincinnati ,"['Berankis R.', 'Mager G.']",2021-08-14,16:00:00,"[1.48, 2.47]",38902459
+1, ATP Cincinnati ,"['Musetti L.', 'Anderson K.']",2021-08-14,16:00:00,"[1.82, 1.89]",38902460
+2, ATP Cincinnati ,"['Nishioka Y.', 'Gerasimov E.']",2021-08-14,16:00:00,"[1.58, 2.25]",38902461
+3, ATP Cincinnati ,"['Sandgren T.', 'Chardy J.']",2021-08-14,16:00:00,"[2.24, 1.58]",38902462
+4, ATP Cincinnati ,"['Johnson S.', 'Ruusuvuori E.']",2021-08-14,17:15:00,"[2.04, 1.7]",38902463
+5, ATP Cincinnati ,"['Alcaraz Garfia C.', 'Monteiro T.']",2021-08-14,17:20:00,"[1.45, 2.57]",38902464
+6, ATP Cincinnati ,"['Krueger M.', 'Ivashka I.']",2021-08-14,17:20:00,"[3.21, 1.3]",38902465
+7, ATP Cincinnati ,"['Paul T.', 'Kwon Soon Woo']",2021-08-14,17:20:00,"[1.62, 2.16]",38902466
+8, ATP Cincinnati ,"['Gasquet R.', 'Verdasco F.']",2021-08-14,18:35:00,"[1.3, 3.19]",38902467
+9, ATP Cincinnati ,"['Gombos N.', 'Munar J.']",2021-08-14,18:40:00,"[2.11, 1.65]",38902468
+10, ATP Cincinnati ,"['Koepfer D.', 'Seppi A.']",2021-08-14,18:40:00,"[1.53, 2.35]",38902469
+11, ATP Cincinnati ,"['Pospisil V.', 'Moutet C.']",2021-08-14,18:40:00,"[1.55, 2.31]",38902470
+12, ATP Cincinnati ,"['Wolf J.J.', 'Giron M.']",2021-08-14,19:50:00,"[2.22, 1.59]",38902471
+13, ATP Cincinnati ,"['Sock J.', 'Popyrin A.']",2021-08-14,21:10:00,"[1.9, 1.81]",38902472
+14, ATP Toronto ,"['Tsitsipas S.', 'Opelka R.']",2021-08-14,21:00:00,"[1.21, 4.72]",38902127
+15, ATP Toronto ,"['Medvedev D.', 'Isner J.']",2021-08-15,02:00:00,"[1.29, 3.75]",38916624
+16, ATP Toronto ,"['Mektic N./Pavic M.', 'Krawietz K./Tecau H.']",2021-08-14,19:30:00,"[1.41, 2.62]",38902522
+17, ATP Toronto ,"['Ram R./Salisbury J.', 'Gille S./Vliegen J.']",2021-08-15,00:00:00,"[1.56, 2.24]",38908301
+18, WTA Montreal ,"['Sabalenka A.', 'Plíšková Kar.']",2021-08-14,19:00:00,"[1.57, 2.48]",38902308
+19, WTA Montreal ,"['Jurak D./Klepac A.', 'Linette M./Pera B.']",2021-08-14,20:15:00,"[1.48, 2.42]",38916593
+20, Challenger Meerbusch ,"['Van de Zandschulp B.', 'Cerundolo J.M.']",2021-08-14,12:30:00,"[1.55, 2.29]",38902162
+21, Challenger Meerbusch ,"['Barrios Vera M.T.', 'Haase R.']",2021-08-14,13:30:00,"[1.69, 2.05]",38902012
+22, Challenger Praha II ,"['Forejtek J.', 'Svrčina D.']",2021-08-14,12:30:00,"[1.67, 1.96]",38901895
+23, Challenger Praha II ,"['Mena F.', 'Popko D.']",2021-08-14,13:50:00,"[2.78, 1.33]",38901588
+24, Challenger Praha II ,"['Karlovskiy E./Tiurnev E.', 'Forejtek J./Vrbenský M.']",2021-08-14,15:10:00,"[2.43, 1.43]",38901896
+25, Challenger San Marino ,"['Cecchinato M.', 'Rune H.V.N.']",2021-08-14,19:00:00,"[1.69, 1.93]",38902164
+26, Challenger San Marino ,"['Dellien H.', 'Luz O.']",2021-08-14,21:00:00,"[1.52, 2.21]",38902324
+27, Challenger San Marino ,"['Matos R./Magalhaes H. De M.J.L.', 'Kolar Z./Martinez L.']",2021-08-14,17:00:00,"[2.14, 1.55]",38902163
+28, ITF Bratislava ,"['Michel L.', 'Semenistaja D.']",2021-08-14,11:40:00,"[2.03, 1.62]",38901622
+29, ITF Bratislava ,"['Lovric P./Nagy A.', 'Skamlova C./Zelnickova R.']",2021-08-14,13:10:00,"[1.43, 2.44]",38901778
+30, ITF Koksijde ,"['Nahimana S.', 'Bjorklund M.']",2021-08-14,14:00:00,"[1.83, 1.78]",38902141
+31, ITF Koksijde ,"['Herdzelas D.', 'Kempen M.']",2021-08-14,16:00:00,"[1.39, 2.56]",38902142
+32, ITF Koksijde ,"['Grammatikopoulou V./Ivakhnenko V.', 'Gjorcheska L./Strakhova V.']",2021-08-14,19:00:00,"[1.47, 2.32]",38902140
+33, ITF Landisville ,"['Kawa K.', 'Frech M.']",2021-08-14,16:00:00,"[2.55, 1.39]",38901964
+34, ITF Landisville ,"['Kerkhove L.', 'Haddad Maia B.']",2021-08-14,16:00:00,"[2.09, 1.58]",38901858
+35, ITF Landisville ,"['Minnen G.', 'McNally C.']",2021-08-14,16:00:00,"[1.65, 1.98]",38900556
+36, ITF Monastir ,"['Koshiishi A.', 'Proctor L.']",2021-08-14,10:30:00,"[1.18, 3.76]",38901589
+37, ITF Monastir ,"['Parazinskaite A.', 'Sakatsume H.']",2021-08-14,10:30:00,"[2.2, 1.53]",38901590
+38, ITF Monastir ,"['Koshiishi A./Nefedova A.(1999)', 'Fiquet T./Parazinskaite A.']",2021-08-14,17:00:00,"[2.11, 1.57]",38902005
+39, ITF Radom ,"['Kolodziejová M.', 'Zakharova A.']",2021-08-14,12:00:00,"[1.63, 2.01]",38901680
+40, Futures Curtea de Arges ,"['Juarez F.', 'Cacao T.']",2021-08-14,11:30:00,"[1.5, 2.25]",38901683
+41, Futures Gdynia ,"['Musialek A.', 'Burruchaga R.A.']",2021-08-14,11:40:00,"[2.95, 1.3]",38901464
+42, Futures Gdynia ,"['Marozsan F.', 'Peliwo F.']",2021-08-14,13:10:00,"[1.35, 2.71]",38901621
+43, Futures Monastir ,"['Dougaz A.', 'Added D.']",2021-08-14,10:30:00,"[1.67, 1.95]",38902002
+44, Futures Monastir ,"['Rodriguez Taverna S.F.', 'Shimabukuro S.']",2021-08-14,10:30:00,"[1.66, 1.97]",38902003
+45, Hanoi muži ,"['Sinner J. SRL', 'Zverev A. SRL']",2021-08-14,13:00:00,"[3.84, 1.18]",38901349
