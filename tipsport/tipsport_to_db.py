@@ -5,7 +5,7 @@ from util.database import Database
 
 import sys
 import os
-sys.path.append(os.path.abspath("/home/henrich/personal_projects/bookie_processing"))
+sys.path.append(os.getenv("BOOKIE_PROCESSING"))
 
 stream = open("tipsport/tipsport_sports.yaml", 'r')
 tipsport_sports = yaml.load(stream,Loader=yaml.FullLoader)

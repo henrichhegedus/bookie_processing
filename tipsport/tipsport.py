@@ -1,7 +1,7 @@
 # append path to sys.path so that it finds other files
 import sys
 import os
-sys.path.append(os.path.abspath("/home/henrich/personal_projects/bookie_processing"))
+sys.path.append(os.getenv("BOOKIE_PROCESSING"))
 
 from util.translate_name import get_clean_name
 from datetime import datetime
@@ -13,7 +13,7 @@ import time
 class Tipsport(Scraper):
     def __init__(self, url):
         Scraper.__init__(self,url)
-        self.translations_path = "/home/henrich/personal_projects/bookie_processing/tipsport/translations.pkl"
+        self.translations_path = f"{os.getenv('BOOKIE_PROCESSING')}/tipsport/translations.pkl"
         self.load_translation_table()
 
     def aktualizuj(self):
