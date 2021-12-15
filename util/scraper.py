@@ -1,6 +1,6 @@
 from selenium.webdriver import Firefox
 from selenium.webdriver.firefox.options import Options
-import time
+import time, pickle
 from selenium.common.exceptions import NoSuchElementException
 
 from abc import ABC,abstractmethod
@@ -23,7 +23,27 @@ class Scraper(ABC):
         except NoSuchElementException:
             return False
 
+    def load_translation_table(self):
+        try:
+            file = open(self.translations_path, 'rb')
+            self.translations = pickle.load(file)
+            file.close()
+        except:
+            self.translations = {}      # translation table doesn't exist
 
+    def write_translation_table(self):
+        with open(self.translations_path, 'wb') as f:
+            pickle.dump(self.translations, f)
+
+    def append_translation_table(self):
+        with open(self.translations_path, 'wb') as f:
+            pickle.dump(self.translations, f)
+
+        with open(self.translations_path, 'rb') as f:
+            self.translations = pickle.load(f)
+
+    def close_browser(self):
+        self.browser.close()
 
     @abstractmethod
     def aktualizuj(self):
@@ -31,10 +51,6 @@ class Scraper(ABC):
 
     @abstractmethod
     def refresh(self):
-        pass
-
-    @abstractmethod
-    def close_browser(self):
         pass
 
     @abstractmethod

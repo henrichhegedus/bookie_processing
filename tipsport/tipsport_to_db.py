@@ -1,25 +1,27 @@
 from tipsport import Tipsport
 import time
 import yaml
-from Scraping.util.Database import Database
+from util.database import Database
 
 import sys
 import os
-sys.path.append(os.path.abspath("/home/henrich/arbitrage"))
+sys.path.append(os.path.abspath("/home/henrich/personal_projects/bookie_processing"))
 
-stream = open("Scraping/tipsport/tipsport_sports.yaml", 'r')
+stream = open("tipsport/tipsport_sports.yaml", 'r')
 tipsport_sports = yaml.load(stream,Loader=yaml.FullLoader)
 
-stream = open("Scraping/util/db_config.yaml", 'r')
+stream = open("util/db_config.yaml", 'r')
 db_config = yaml.load(stream,Loader=yaml.FullLoader)
 
 for sport in tipsport_sports.keys():
     if sport != "tenis":
         url = tipsport_sports[sport]
         scraper = Tipsport(url)
-        time.sleep(30)
+        time.sleep(3)
         df = scraper.read_values(sport)
         df.to_csv(f"nike_{sport}.csv")
 
-        database = Database(db_config)
-        database.insert_scrape_to_db("tipsport", df)
+        # database = Database(db_config)
+        # database.insert_scrape_to_db("tipsport", df)
+
+        scraper.close_browser()

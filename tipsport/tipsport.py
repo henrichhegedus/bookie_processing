@@ -1,30 +1,35 @@
 # append path to sys.path so that it finds other files
 import sys
 import os
-sys.path.append(os.path.abspath("/home/henrich/arbitrage"))
+sys.path.append(os.path.abspath("/home/henrich/personal_projects/bookie_processing"))
 
+from util.translate_name import get_clean_name
 from datetime import datetime
-from Scraping.util.scraper import Scraper
+from util.scraper import Scraper
 from bs4 import BeautifulSoup as bs
 import pandas as pd
+import time
 
 class Tipsport(Scraper):
+    def __init__(self, url):
+        Scraper.__init__(self,url)
+        self.translations_path = "/home/henrich/personal_projects/bookie_processing/tipsport/translations.pkl"
+        self.load_translation_table()
+
     def aktualizuj(self):
         self.browser.find_element_by_xpath('//*[@title="Aktualizovať"]').click()
 
     def refresh(self):
         self.browser.get(self.url)
 
-    def close_browser(self):
-        self.browser.close()
-
     def abreviate_name_single(self, name):
-        split_name =  name.split(" ")
-        abbreviated = split_name[0]
-        for sub_name in split_name[1:]:
-            abbreviated += " " + sub_name[0] + "."
-
-        return abbreviated
+        try:
+            abv_name = self.translations[name]
+        except:
+            abv_name, _ = get_clean_name(name)
+            self.translations[name] = abv_name      # add to the translations
+            self.append_translation_table()
+        return abv_name
 
 
     def format_player_names(self, name):
