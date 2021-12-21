@@ -24,9 +24,8 @@ class Database:
                 postgres_insert_query = None
 
                 if len(one_bet["odds"]) == 2:
-                    postgres_insert_query = """ INSERT INTO scrape(bookie, sport, competition, event_date, event_time, odds1, odds2, team1, team2, bet_id)
-                                                VALUES ('{}','{}','{}','{}','{}',{},{},'{}','{}',{}) 
-                                                ON CONFLICT (bookie, bet_id) do update SET odds1 = {}, odds2={};
+                    postgres_insert_query = """ INSERT INTO arbitrage.scrape(bookie, sport, competition, event_date, event_time, odds1, odds2, team1, team2, bet_id)
+                                                VALUES ('{}','{}','{}','{}','{}',{},{},'{}','{}',{});
                                             """
                     postgres_insert_query = postgres_insert_query.format(bookie,
                                                                          one_bet["sport"],
@@ -42,9 +41,8 @@ class Database:
                                                                          one_bet["odds"][1])
 
                 if len(one_bet["odds"])>= 5:
-                    postgres_insert_query = """ INSERT INTO arbs_scrape(bookie, sport, competition, event_date, event_time, odds1, oddsx, odds2, team1, team2, bet_id)
-                                                VALUES ('{}','{}','{}','{}','{}',{}, {}, {}, '{}','{}',{}) 
-                                                ON CONFLICT (bookie, bet_id) do update SET odds1 = {}, oddsx={}, odds2={};
+                    postgres_insert_query = """ INSERT INTO arbitrage.scrape(bookie, sport, competition, event_date, event_time, odds1, oddsx, odds2, team1, team2, bet_id)
+                                                VALUES ('{}','{}','{}','{}','{}',{}, {}, {}, '{}','{}',{});
                                             """
                     postgres_insert_query = postgres_insert_query.format(bookie,
                                                                          one_bet["sport"],
@@ -83,7 +81,7 @@ class Database:
 
     def delete_arbs(self):
         try:
-            postgres_select_query = "DELETE FROM arbs_arbs"
+            postgres_select_query = "DELETE FROM arbitrage.arbs"
             self.cursor.execute(postgres_select_query)
 
         except (Exception, psycopg2.Error) as error:
@@ -91,7 +89,7 @@ class Database:
 
     def get_scrape(self):
         try:
-            postgres_select_query = "select * from arbs_scrape"
+            postgres_select_query = "select * from arbitrage.scrape"
             self.cursor.execute(postgres_select_query)
             query_result = self.cursor.fetchall()
             rows = np.array(query_result)
@@ -103,13 +101,21 @@ class Database:
         except (Exception, psycopg2.Error) as error:
             print("Error in select operation", error)
 
+    def get_and_update(self, entry):
+        try:
+            postgres_select_query = "DELETE FROM arbitrage.arbs"
+            self.cursor.execute(postgres_select_query)
+
+        except (Exception, psycopg2.Error) as error:
+            print("Error in delete operation", error)
+
 
     def insert_arbs_to_db(self, df):
         try:
             for i in range(len(df)):
                 one_arb = df.loc[i]
                 print(one_arb)
-                postgres_insert_query = """ INSERT INTO arbs_arbs(sport, competition, team1, team2, bookie1, bookiex, bookie2, odds1, oddsx, odds2, margin)
+                postgres_insert_query = """ INSERT INTO arbitrage.arbs(sport, competition, team1, team2, bookie1, bookiex, bookie2, odds1, oddsx, odds2, margin)
                                             VALUES ('{}','{}','{}','{}','{}','{}','{}', {}, {}, {}, {});
                                         """
                 postgres_insert_query = postgres_insert_query.format(one_arb["sport"],
