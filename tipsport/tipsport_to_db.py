@@ -19,9 +19,9 @@ for sport in tipsport_sports.keys():
         scraper = Tipsport(url)
         time.sleep(3)
         df = scraper.read_values(sport)
-        df.to_csv(f"nike_{sport}.csv")
+        df.to_csv(f"tipsport_{sport}.csv")
 
-        # database = Database(db_config)
-        # database.insert_scrape_to_db("tipsport", df)
+        database = Database(db_config)
+        database.insert_scrape_to_db("tipsport", df)
 
         scraper.close_browser()

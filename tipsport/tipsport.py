@@ -65,13 +65,11 @@ class Tipsport(Scraper):
         :param odds:
         :return:
         """
-        print(f'not sorted {matches} {odds}')
         matches_sorted = sorted(matches)
 
         if matches_sorted != matches:
             odds = odds[::-1]
 
-        print(f'sorted {matches_sorted} {odds}')
         return matches_sorted, odds
 
 
