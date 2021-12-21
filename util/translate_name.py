@@ -3,7 +3,7 @@ from selenium.webdriver.firefox.options import Options
 
 from bs4 import BeautifulSoup as bs
 
-def get_clean_name(name):
+def get_clean_name(name,sport):
     """
     Get a translation of team or player name based on a Google search of that name
     :param name: word to search on Google
@@ -15,7 +15,7 @@ def get_clean_name(name):
     browser = Firefox(options=options)
 
     name = name.replace(" ",'+')
-    browser.get(f'https://www.google.com/search?q={name}')
+    browser.get(f'https://www.google.com/search?q={name}+{sport}')
 
     soup = bs(browser.page_source, features="lxml")
 

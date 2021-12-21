@@ -22,24 +22,24 @@ class Tipsport(Scraper):
     def refresh(self):
         self.browser.get(self.url)
 
-    def abreviate_name_single(self, name):
+    def abreviate_name_single(self, name, sport):
         try:
             abv_name = self.translations[name]
         except:
-            abv_name, _ = get_clean_name(name)
+            abv_name, _ = get_clean_name(name, sport)
             self.translations[name] = abv_name      # add to the translations
             self.append_translation_table()
         return abv_name
 
 
-    def format_player_names(self, name):
+    def format_player_names(self, name, sport):
         name = name.replace("'","$")
         try:
             fst, snd = name.split(" - ")
 
             if "/" not in fst:
-                fst = self.abreviate_name_single(fst)
-                snd = self.abreviate_name_single(snd)
+                fst = self.abreviate_name_single(fst, sport)
+                snd = self.abreviate_name_single(snd, sport)
 
             return [fst, snd]
 
@@ -58,13 +58,29 @@ class Tipsport(Scraper):
             odds_list[2] = odds_list[4]
         return(odds_list)
 
+    def sort_order(self, matches, odds):
+        """
+        Make sure matches and odds are in alphabeticla order
+        :param matches:
+        :param odds:
+        :return:
+        """
+        print(f'not sorted {matches} {odds}')
+        matches_sorted = sorted(matches)
+
+        if matches_sorted != matches:
+            odds = odds[::-1]
+
+        print(f'sorted {matches_sorted} {odds}')
+        return matches_sorted, odds
+
+
     def read_values(self, sport):
         soup = bs(self.browser.page_source, features="lxml")
 
         boxes = soup.find_all("div",
                               class_="o-superSportRow__body")
 
-        dates = list()
         times = list()
         matches = list()
         odds_all = list()
@@ -80,29 +96,32 @@ class Tipsport(Scraper):
                     competition =  row.find("div", class_ = "colCompetition").text.strip().split("-")[0]
 
                 else:
-                    match = self.format_player_names(row.find("span", class_="o-matchRow__matchName").text.strip())
+                    match = self.format_player_names(row.find("span", class_="o-matchRow__matchName").text.strip(), sport)
                     _, _, bet_id, _ = row.attrs["data-atid"].split("||")
 
                     date_time = row.find("div", class_="o-matchRow__dateClosed").text.strip()
 
                     odds_soup = row.find_all("div", class_="btnRate")
-                    print([o.text for o in odds_soup])
                     odds = self.get_odds(odds_soup)
 
                     date_time = date_time[:-5]+" "+date_time[-5:]
 
                     datetime_object = datetime.strptime(date_time,'%d.%m.%Y %H:%M')
 
-                    dates.append(datetime_object.strftime('%Y-%m-%d'))
-                    times.append(datetime_object.strftime('%H:%M:%S'))
+                    if isinstance(match, list):
+                        matches, odds = self.sort_order( match, odds)
+
+                    times.append(datetime_object.strftime('%Y-%m-%d %H:%M:%S'))
                     bet_ids.append(bet_id)
                     matches.append(match)
                     sports.append(sport)
                     competitions.append(competition)
                     odds_all.append(odds)
 
+
                     #todo - add competition name to nike as well as who is playing
 
-        df = pd.DataFrame({"sport":sports, "competition": competitions, "match": matches, "date": dates, "time": times, "odds": odds_all,"bet_ids":bet_ids})
+        df = pd.DataFrame({"sport":sports, "competition": competitions, "match": matches, "time": times, "odds": odds_all,"bet_ids":bet_ids})
+
 
         return df
