@@ -108,18 +108,15 @@ class Tipsport(Scraper):
 
                     datetime_object = datetime.strptime(date_time,'%d.%m.%Y %H:%M')
 
-                    if isinstance(match, list):
-                        matches, odds = self.sort_order( match, odds)
+                    if isinstance(match, list): # sometimes is not list and then we dont want to deal with it
+                        match, odds = self.sort_order(match, odds)
 
-                    times.append(datetime_object.strftime('%Y-%m-%d %H:%M:%S'))
-                    bet_ids.append(bet_id)
-                    matches.append(match)
-                    sports.append(sport)
-                    competitions.append(competition)
-                    odds_all.append(odds)
-
-
-                    #todo - add competition name to nike as well as who is playing
+                        times.append(datetime_object.strftime('%Y-%m-%d %H:%M:%S'))
+                        bet_ids.append(bet_id)
+                        matches.append(match)
+                        sports.append(sport)
+                        competitions.append(competition)
+                        odds_all.append(odds)
 
         df = pd.DataFrame({"sport":sports, "competition": competitions, "match": matches, "time": times, "odds": odds_all,"bet_ids":bet_ids})
 
