@@ -25,7 +25,7 @@ class Database:
 
                 if len(one_bet["odds"]) == 2:
                     postgres_insert_query = """ INSERT INTO arbitrage.scrape(bookie, sport, competition, event_date, event_time, odds1, odds2, team1, bet_id)
-                                                VALUES ('{}','{}','{}','{}','{}',{},{},'{}',{});
+                                                VALUES ('{}','{}','{}','{}','{}',{},{},'{}',{}) ON CONFLICT (bet_id) DO UPDATE SET odds1={}, odds2={};
                                             """
                     postgres_insert_query = postgres_insert_query.format(bookie,
                                                                          one_bet["sport"],
@@ -37,11 +37,14 @@ class Database:
                                                                          one_bet["match"],
                                                                          one_bet["bet_ids"],
                                                                          one_bet["odds"][0],
-                                                                         one_bet["odds"][1])
+                                                                         one_bet["odds"][1],
+                                                                         one_bet["odds"][0],
+                                                                         one_bet["odds"][1]
+                                                                         )
 
                 if len(one_bet["odds"]) == 3:
                     postgres_insert_query = """ INSERT INTO arbitrage.scrape(bookie, sport, competition, event_date, event_time, odds1, oddsx, odds2, team1, bet_id)
-                                                VALUES ('{}','{}','{}','{}','{}',{}, {}, {},'{}',{});
+                                                VALUES ('{}','{}','{}','{}','{}',{}, {}, {},'{}',{}) ON CONFLICT (bet_id) DO UPDATE SET odds1={}, oddsx={}, odds2={};
                                             """
                     postgres_insert_query = postgres_insert_query.format(bookie,
                                                                          one_bet["sport"],
@@ -55,7 +58,11 @@ class Database:
                                                                          one_bet["bet_ids"],
                                                                          one_bet["odds"][0],
                                                                          one_bet["odds"][1],
-                                                                         one_bet["odds"][2])
+                                                                         one_bet["odds"][2],
+                                                                         one_bet["odds"][0],
+                                                                         one_bet["odds"][1],
+                                                                         one_bet["odds"][2]
+                                                                         )
                 if postgres_insert_query:
                     self.cursor.execute(postgres_insert_query)
 
@@ -114,7 +121,7 @@ class Database:
                 one_arb = df.loc[i]
                 if one_arb['oddsX']:
                     postgres_insert_query = """ INSERT INTO arbitrage.arbs(sport, match, date, time, odds1, oddsx, odds2, margin, bookie1, bookiex, bookie2)
-                                                VALUES ('{}','{}','{}','{}',{},{},{}, {}, '{}', '{}', '{}');
+                                                VALUES ('{}','{}','{}','{}',{},{},{}, {}, '{}', '{}', '{}') ON CONFLICT (match,date) DO UPDATE SET odds1={}, oddsx={}, odds2={}, margin={},bookie1='{}',bookiex='{}',bookie2='{}';
                                             """
                     postgres_insert_query = postgres_insert_query.format(one_arb["sport"],
                                                                          one_arb["match"],
@@ -126,16 +133,29 @@ class Database:
                                                                          one_arb["margin"],
                                                                          one_arb["bookie1"],
                                                                          one_arb["bookieX"],
+                                                                         one_arb["bookie2"],
+                                                                         one_arb["odds1"],
+                                                                         one_arb["oddsX"],
+                                                                         one_arb["odds2"],
+                                                                         one_arb["margin"],
+                                                                         one_arb["bookie1"],
+                                                                         one_arb["bookieX"],
                                                                          one_arb["bookie2"]
                                                                          )
                 else:
                     postgres_insert_query = """ INSERT INTO arbitrage.arbs(sport, match, date, time, odds1, odds2, margin, bookie1, bookiex, bookie2)
-                                                VALUES ('{}','{}','{}','{}',{}, {}, {}, '{}', '{}', '{}');
+                                                VALUES ('{}','{}','{}','{}',{}, {}, {}, '{}', '{}', '{}') ON CONFLICT (match,date) DO UPDATE SET odds1={}, odds2={}, margin={},bookie1='{}',bookie2='{}';
                                             """
                     postgres_insert_query = postgres_insert_query.format(one_arb["sport"],
                                                                          one_arb["match"],
                                                                          one_arb["date"],
                                                                          one_arb["time"],
+                                                                         one_arb["odds1"],
+                                                                         one_arb["odds2"],
+                                                                         one_arb["margin"],
+                                                                         one_arb["bookie1"],
+                                                                         one_arb["bookieX"],
+                                                                         one_arb["bookie2"],
                                                                          one_arb["odds1"],
                                                                          one_arb["odds2"],
                                                                          one_arb["margin"],
