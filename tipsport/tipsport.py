@@ -53,10 +53,14 @@ class Tipsport(Scraper):
                 odds_list.append(0)
             else:
                 odds_list.append(float(odd.text.replace(",", ".")))
+
+        print(odds_list)
         if len(odds_list) == 5:
-            odds_list[1] = odds_list[2]
-            odds_list[2] = odds_list[4]
-        return(odds_list)
+            new_odds_list = [odds_list[0], odds_list[2], odds_list[4]]
+            return new_odds_list
+
+        else:
+            return odds_list
 
     def sort_order(self, matches, odds):
         """
@@ -70,7 +74,8 @@ class Tipsport(Scraper):
         if matches_sorted != matches:
             odds = odds[::-1]
 
-        return matches_sorted, odds
+        players = f'{matches_sorted[0]} v {matches_sorted[1]}'
+        return players, odds
 
 
     def read_values(self, sport):
@@ -80,6 +85,7 @@ class Tipsport(Scraper):
                               class_="o-superSportRow__body")
 
         times = list()
+        dates = list()
         matches = list()
         odds_all = list()
         competitions = list()
@@ -107,16 +113,21 @@ class Tipsport(Scraper):
                     datetime_object = datetime.strptime(date_time,'%d.%m.%Y %H:%M')
 
                     if isinstance(match, list): # sometimes is not list and then we dont want to deal with it
-                        match, odds = self.sort_order(match, odds)
+                        if match[0] != None and match[1] != None:
+                            match, odds = self.sort_order(match, odds)
+                            time = datetime_object.strftime('%H:%M:%S')
+                            date = datetime_object.strftime('%Y-%m-%d')
 
-                        times.append(datetime_object.strftime('%Y-%m-%d %H:%M:%S'))
-                        bet_ids.append(bet_id)
-                        matches.append(match)
-                        sports.append(sport)
-                        competitions.append(competition)
-                        odds_all.append(odds)
+                            entry = {'time': time, 'match':match,"sport":sport,"competition":competition,'odds':odds}
+                            times.append(time)
+                            dates.append(date)
+                            bet_ids.append(bet_id)
+                            matches.append(match)
+                            sports.append(sport)
+                            competitions.append(competition)
+                            odds_all.append(odds)
 
-        df = pd.DataFrame({"sport":sports, "competition": competitions, "match": matches, "time": times, "odds": odds_all,"bet_ids":bet_ids})
+        df = pd.DataFrame({"sport":sports, "competition": competitions, "match": matches, "date":dates, "time": times, "odds": odds_all,"bet_ids":bet_ids})
 
 
         return df

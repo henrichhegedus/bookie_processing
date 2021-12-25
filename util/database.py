@@ -24,8 +24,8 @@ class Database:
                 postgres_insert_query = None
 
                 if len(one_bet["odds"]) == 2:
-                    postgres_insert_query = """ INSERT INTO arbitrage.scrape(bookie, sport, competition, event_date, event_time, odds1, odds2, team1, team2, bet_id)
-                                                VALUES ('{}','{}','{}','{}','{}',{},{},'{}','{}',{});
+                    postgres_insert_query = """ INSERT INTO arbitrage.scrape(bookie, sport, competition, event_date, event_time, odds1, odds2, team1, bet_id)
+                                                VALUES ('{}','{}','{}','{}','{}',{},{},'{}',{});
                                             """
                     postgres_insert_query = postgres_insert_query.format(bookie,
                                                                          one_bet["sport"],
@@ -34,15 +34,14 @@ class Database:
                                                                          one_bet["time"],
                                                                          one_bet["odds"][0],
                                                                          one_bet["odds"][1],
-                                                                         one_bet["match"][0],
-                                                                         one_bet["match"][1],
+                                                                         one_bet["match"],
                                                                          one_bet["bet_ids"],
                                                                          one_bet["odds"][0],
                                                                          one_bet["odds"][1])
 
-                if len(one_bet["odds"])>= 5:
-                    postgres_insert_query = """ INSERT INTO arbitrage.scrape(bookie, sport, competition, event_date, event_time, odds1, oddsx, odds2, team1, team2, bet_id)
-                                                VALUES ('{}','{}','{}','{}','{}',{}, {}, {}, '{}','{}',{});
+                if len(one_bet["odds"]) == 3:
+                    postgres_insert_query = """ INSERT INTO arbitrage.scrape(bookie, sport, competition, event_date, event_time, odds1, oddsx, odds2, team1, bet_id)
+                                                VALUES ('{}','{}','{}','{}','{}',{}, {}, {},'{}',{});
                                             """
                     postgres_insert_query = postgres_insert_query.format(bookie,
                                                                          one_bet["sport"],
@@ -52,8 +51,7 @@ class Database:
                                                                          one_bet["odds"][0],
                                                                          one_bet["odds"][1],
                                                                          one_bet["odds"][2],
-                                                                         one_bet["match"][0],
-                                                                         one_bet["match"][1],
+                                                                         one_bet["match"],
                                                                          one_bet["bet_ids"],
                                                                          one_bet["odds"][0],
                                                                          one_bet["odds"][1],
@@ -93,9 +91,9 @@ class Database:
             self.cursor.execute(postgres_select_query)
             query_result = self.cursor.fetchall()
             rows = np.array(query_result)
-            print(rows[0])
-            df = pd.DataFrame({"bookie": rows[:,0],"bet_id":rows[:,1], "date": rows[:,2], "time": rows[:,3], "sport": rows[:,4], "competition":rows[:,5],
-                                "team1":rows[:,6], "team2":rows[:,7], "odds1":rows[:,8], "oddsx":rows[:,9],"odds2": rows[:,10]})
+            df = pd.DataFrame({"bookie": rows[:,1],"bet_id":rows[:,2], "date": rows[:,3], "time": rows[:,4], "sport": rows[:,5], "competition":rows[:,6],
+                               "team1":rows[:,7], "odds1":rows[:,8], "oddsx":rows[:,9],"odds2": rows[:,10]})
+            df[['odds1', 'oddsx', 'odds2']] = df[['odds1', 'oddsx', 'odds2']].apply(pd.to_numeric)
             return df
 
         except (Exception, psycopg2.Error) as error:
@@ -114,23 +112,37 @@ class Database:
         try:
             for i in range(len(df)):
                 one_arb = df.loc[i]
-                print(one_arb)
-                postgres_insert_query = """ INSERT INTO arbitrage.arbs(sport, competition, team1, team2, bookie1, bookiex, bookie2, odds1, oddsx, odds2, margin)
-                                            VALUES ('{}','{}','{}','{}','{}','{}','{}', {}, {}, {}, {});
-                                        """
-                postgres_insert_query = postgres_insert_query.format(one_arb["sport"],
-                                                                     one_arb["competition"],
-                                                                     one_arb["team1"],
-                                                                     one_arb["team2"],
-                                                                     one_arb["bookie1"],
-                                                                     one_arb["bookiex"],
-                                                                     one_arb["bookie2"],
-                                                                     one_arb["odds1"],
-                                                                     one_arb["oddsx"],
-                                                                     one_arb["odds2"],
-                                                                     one_arb["margin"]
-                                                                     )
-
+                if one_arb['oddsX']:
+                    postgres_insert_query = """ INSERT INTO arbitrage.arbs(sport, match, date, time, odds1, oddsx, odds2, margin, bookie1, bookiex, bookie2)
+                                                VALUES ('{}','{}','{}','{}',{},{},{}, {}, '{}', '{}', '{}');
+                                            """
+                    postgres_insert_query = postgres_insert_query.format(one_arb["sport"],
+                                                                         one_arb["match"],
+                                                                         one_arb["date"],
+                                                                         one_arb["time"],
+                                                                         one_arb["odds1"],
+                                                                         one_arb["oddsX"],
+                                                                         one_arb["odds2"],
+                                                                         one_arb["margin"],
+                                                                         one_arb["bookie1"],
+                                                                         one_arb["bookieX"],
+                                                                         one_arb["bookie2"]
+                                                                         )
+                else:
+                    postgres_insert_query = """ INSERT INTO arbitrage.arbs(sport, match, date, time, odds1, odds2, margin, bookie1, bookiex, bookie2)
+                                                VALUES ('{}','{}','{}','{}',{}, {}, {}, '{}', '{}', '{}');
+                                            """
+                    postgres_insert_query = postgres_insert_query.format(one_arb["sport"],
+                                                                         one_arb["match"],
+                                                                         one_arb["date"],
+                                                                         one_arb["time"],
+                                                                         one_arb["odds1"],
+                                                                         one_arb["odds2"],
+                                                                         one_arb["margin"],
+                                                                         one_arb["bookie1"],
+                                                                         one_arb["bookieX"],
+                                                                         one_arb["bookie2"]
+                                                                         )
 
                 self.cursor.execute(postgres_insert_query)
 

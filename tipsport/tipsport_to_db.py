@@ -14,14 +14,14 @@ stream = open("util/db_config.yaml", 'r')
 db_config = yaml.load(stream,Loader=yaml.FullLoader)
 
 for sport in tipsport_sports.keys():
-    if sport != "tenis":
-        url = tipsport_sports[sport]
-        scraper = Tipsport(url)
-        time.sleep(3)
-        df = scraper.read_values(sport)
-        df.to_csv(f"tipsport_{sport}.csv")
+    url = tipsport_sports[sport]
+    scraper = Tipsport(url)
+    time.sleep(20)
+    df = scraper.read_values(sport)
+    print(df)
+    df.to_csv(f"tipsport_{sport}.csv")
 
-        database = Database(db_config)
-        database.insert_scrape_to_db("tipsport", df)
+    database = Database(db_config)
+    database.insert_scrape_to_db("tipsport", df)
 
-        scraper.close_browser()
+    scraper.close_browser()
