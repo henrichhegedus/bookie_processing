@@ -16,7 +16,7 @@ for sport in nike_sports.keys():
     scraper = Nike(url)
     scraper.load_all()
     df = scraper.read_values(sport)
-    df.to_csv(f"nike_{sport}.csv")
+    df.to_csv(f"nike/data_log/nike_{sport}.csv")
 
     database = Database(db_config)
     database.insert_scrape_to_db("nike", df)

@@ -7,11 +7,6 @@ from datetime import datetime
 import pandas as pd
 
 class Nike(Scraper):
-    def __init__(self, url):
-        Scraper.__init__(self,url)
-        self.translations_path = f"{os.getenv('BOOKIE_PROCESSING')}/nike/nike.pkl"
-        self.load_translation_table()
-
     def load_all(self):
         while self.check_exists_by_xpath("//button[contains(text(),'Zobraziť viac')]"):
             try:
@@ -88,6 +83,9 @@ class Nike(Scraper):
             return players, odds
 
     def read_values(self, sport):
+        self.translations_path = f"{os.getenv('BOOKIE_PROCESSING')}/nike/translations/{sport}.pkl"
+        self.load_translation_table()
+
         soup = bs(self.browser.page_source, features="lxml")
 
         boxes = soup.find_all("div", {'data-atid':'n1-league-box'})

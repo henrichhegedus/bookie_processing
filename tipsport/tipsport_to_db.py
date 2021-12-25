@@ -19,7 +19,7 @@ for sport in tipsport_sports.keys():
     time.sleep(20)
     df = scraper.read_values(sport)
     print(df)
-    df.to_csv(f"tipsport_{sport}.csv")
+    df.to_csv(f"tipsport/data_log/tipsport_{sport}.csv")
 
     database = Database(db_config)
     database.insert_scrape_to_db("tipsport", df)

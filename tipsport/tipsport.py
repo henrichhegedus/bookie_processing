@@ -11,11 +11,6 @@ import pandas as pd
 import time
 
 class Tipsport(Scraper):
-    def __init__(self, url):
-        Scraper.__init__(self,url)
-        self.translations_path = f"{os.getenv('BOOKIE_PROCESSING')}/tipsport/translations.pkl"
-        self.load_translation_table()
-
     def aktualizuj(self):
         self.browser.find_element_by_xpath('//*[@title="Aktualizovať"]').click()
 
@@ -79,6 +74,9 @@ class Tipsport(Scraper):
 
 
     def read_values(self, sport):
+        self.translations_path = f"{os.getenv('BOOKIE_PROCESSING')}/tipsport/translations/{sport}.pkl"
+        self.load_translation_table()
+
         soup = bs(self.browser.page_source, features="lxml")
 
         boxes = soup.find_all("div",
