@@ -26,6 +26,12 @@ def get_clean_name(name,sport):
             entry = soup.find("div", class_ = 'ofy7ae') # class for team
             return entry.text, "team"
         except:
+            try:        # wikipedia search
+                entry = soup.find("h2", class_ = 'kno-ecr-pt')
+                return entry.text, "wiki"
+
+            except:
+                pass
             return None, None
 
     else:
@@ -33,3 +39,6 @@ def get_clean_name(name,sport):
 
 
     return None, None
+
+
+print(get_clean_name('karlovy vary', 'hockey'))
