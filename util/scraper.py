@@ -30,6 +30,7 @@ class Scraper(ABC):
             file.close()
         except:
             self.translations = {}      # translation table doesn't exist
+            self.write_translation_table()
 
     def write_translation_table(self):
         with open(self.translations_path, 'wb') as f:

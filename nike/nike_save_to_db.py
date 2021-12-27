@@ -14,7 +14,6 @@ db_config = yaml.load(stream,Loader=yaml.FullLoader)
 for sport in nike_sports.keys():
     url = nike_sports[sport]
     scraper = Nike(url)
-    scraper.load_all()
     df = scraper.read_values(sport)
     df.to_csv(f"nike/data_log/nike_{sport}.csv")
 

@@ -81,6 +81,18 @@ class Nike(Scraper):
             # format matches into one string
             players = f'{matches_sorted[0]} v {matches_sorted[1]}'
             return players, odds
+    def get_odds(self, odds_soup):
+        try:
+            return [float(o.text.replace(",", ".")) for o in odds_soup]
+
+        except:
+            odds = []
+            for o in odds_soup:
+                try:
+                    odds.append(float(o.text.replace(",", ".")))
+                except:
+                    odds.append(0)
+            return odds
 
     def read_values(self, sport):
         self.translations_path = f"{os.getenv('BOOKIE_PROCESSING')}/nike/translations/{sport}.pkl"
@@ -110,7 +122,7 @@ class Nike(Scraper):
                 players = [p.strip() for p in players.split("vs")]
 
                 odds_soup = row.find_all("span", class_="bet-center")
-                odds = [float(o.text.replace(",", ".")) for o in odds_soup]
+                odds = self.get_odds(odds_soup)
 
                 if len(odds) == 0:
                     continue

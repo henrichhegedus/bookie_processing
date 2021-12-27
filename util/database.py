@@ -25,7 +25,7 @@ class Database:
 
                 if len(one_bet["odds"]) == 2:
                     postgres_insert_query = """ INSERT INTO arbitrage.scrape(bookie, sport, competition, event_date, event_time, odds1, odds2, team1, bet_id)
-                                                VALUES ('{}','{}','{}','{}','{}',{},{},'{}',{}) ON CONFLICT (bet_id) DO UPDATE SET odds1={}, odds2={};
+                                                VALUES ('{}','{}','{}','{}','{}', {}, {},'{}', {}) ON CONFLICT (bet_id) DO UPDATE SET odds1={}, odds2={};
                                             """
                     postgres_insert_query = postgres_insert_query.format(bookie,
                                                                          one_bet["sport"],

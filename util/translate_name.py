@@ -39,6 +39,3 @@ def get_clean_name(name,sport):
 
 
     return None, None
-
-
-print(get_clean_name('karlovy vary', 'hockey'))
