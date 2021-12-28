@@ -2,15 +2,17 @@
 import sys
 import os
 sys.path.append(os.getenv("BOOKIE_PROCESSING"))
-
+from util.util import *
 from util.translate_name import get_clean_name
 from datetime import datetime
 from util.scraper import Scraper
 from bs4 import BeautifulSoup as bs
 import pandas as pd
-import time
 
 class Tipsport(Scraper):
+    def __init__(self,url):
+        super().__init__(url, 'Tipsport')
+
     def aktualizuj(self):
         self.browser.find_element_by_xpath('//*[@title="Aktualizovať"]').click()
 
@@ -56,22 +58,6 @@ class Tipsport(Scraper):
 
         else:
             return odds_list
-
-    def sort_order(self, matches, odds):
-        """
-        Make sure matches and odds are in alphabeticla order
-        :param matches:
-        :param odds:
-        :return:
-        """
-        matches_sorted = sorted(matches)
-
-        if matches_sorted != matches:
-            odds = odds[::-1]
-
-        players = f'{matches_sorted[0]} v {matches_sorted[1]}'
-        return players, odds
-
 
     def read_values(self, sport):
         self.translations_path = f"{os.getenv('BOOKIE_PROCESSING')}/tipsport/translations/{sport}.pkl"
@@ -124,8 +110,9 @@ class Tipsport(Scraper):
                             sports.append(sport)
                             competitions.append(competition)
                             odds_all.append(odds)
+                            self.db.insert_scrape_single({"sport":sport, "competition": competition, "match": match, "date": date, "time": time, "odds": odds,"bet_ids":bet_id})
 
         df = pd.DataFrame({"sport":sports, "competition": competitions, "match": matches, "date":dates, "time": times, "odds": odds_all,"bet_ids":bet_ids})
 
-
+        self.close_browser()
         return df

@@ -1,8 +1,5 @@
-import difflib
 import pandas as pd
 import numpy as np
-import unidecode
-import math
 import yaml
 from database import Database
 from tabulate import tabulate

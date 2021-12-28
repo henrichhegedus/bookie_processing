@@ -1,82 +1,86 @@
-import time
 import pandas as pd
 import numpy as np
 import psycopg2
 import datetime
+import yaml
+import os
 
 
 class Database:
-    def __init__(self, config):
-        self.connection = psycopg2.connect(user=config["user"],
-                                      password=config["password"],
-                                      host=config["host"],
-                                      port=config["port"],
-                                      database=config["database"])
+    def __init__(self, bookie):
+        stream = open(os.getenv("BOOKIE_PROCESSING")+"/util/db_config.yaml", 'r')
+        db_config = yaml.load(stream,Loader=yaml.FullLoader)
+
+        self.connection = psycopg2.connect(user=db_config["user"],
+                                      password=db_config["password"],
+                                      host=db_config["host"],
+                                      port=db_config["port"],
+                                      database=db_config["database"])
         self.cursor = self.connection.cursor()
+        self.bookie = bookie
 
-    def insert_scrape_to_db(self, bookie, df):
+    def insert_scrape_to_db(self, df):
+        for i in range(len(df)):
+            one_bet = df.loc[i]
+            print(one_bet)
+            self.insert_scrape_single(one_bet)
 
+    def insert_scrape_single(self, one_bet):
         try:
-            for i in range(len(df)):
+            postgres_insert_query = None
+            print(len(one_bet["odds"]))
+            if len(one_bet["odds"]) == 2:
+                postgres_insert_query = """ INSERT INTO arbitrage.scrape(bookie, sport, competition, event_date, event_time, odds1, odds2, team1, bet_id)
+                                                    VALUES ('{}','{}','{}','{}','{}', {}, {},'{}', {}) ON CONFLICT (bet_id) DO UPDATE SET odds1={}, odds2={};
+                                                """
+                postgres_insert_query = postgres_insert_query.format(self.bookie,
+                                                                     one_bet["sport"],
+                                                                     one_bet["competition"],
+                                                                     one_bet["date"],
+                                                                     one_bet["time"],
+                                                                     one_bet["odds"][0],
+                                                                     one_bet["odds"][1],
+                                                                     one_bet["match"],
+                                                                     one_bet["bet_ids"],
+                                                                     one_bet["odds"][0],
+                                                                     one_bet["odds"][1],
+                                                                     one_bet["odds"][0],
+                                                                     one_bet["odds"][1]
+                                                                     )
 
-                one_bet = df.loc[i]
-                print(one_bet)
-
-                postgres_insert_query = None
-
-                if len(one_bet["odds"]) == 2:
-                    postgres_insert_query = """ INSERT INTO arbitrage.scrape(bookie, sport, competition, event_date, event_time, odds1, odds2, team1, bet_id)
-                                                VALUES ('{}','{}','{}','{}','{}', {}, {},'{}', {}) ON CONFLICT (bet_id) DO UPDATE SET odds1={}, odds2={};
-                                            """
-                    postgres_insert_query = postgres_insert_query.format(bookie,
-                                                                         one_bet["sport"],
-                                                                         one_bet["competition"],
-                                                                         one_bet["date"],
-                                                                         one_bet["time"],
-                                                                         one_bet["odds"][0],
-                                                                         one_bet["odds"][1],
-                                                                         one_bet["match"],
-                                                                         one_bet["bet_ids"],
-                                                                         one_bet["odds"][0],
-                                                                         one_bet["odds"][1],
-                                                                         one_bet["odds"][0],
-                                                                         one_bet["odds"][1]
-                                                                         )
-
-                if len(one_bet["odds"]) == 3:
-                    postgres_insert_query = """ INSERT INTO arbitrage.scrape(bookie, sport, competition, event_date, event_time, odds1, oddsx, odds2, team1, bet_id)
-                                                VALUES ('{}','{}','{}','{}','{}',{}, {}, {},'{}',{}) ON CONFLICT (bet_id) DO UPDATE SET odds1={}, oddsx={}, odds2={};
-                                            """
-                    postgres_insert_query = postgres_insert_query.format(bookie,
-                                                                         one_bet["sport"],
-                                                                         one_bet["competition"],
-                                                                         one_bet["date"],
-                                                                         one_bet["time"],
-                                                                         one_bet["odds"][0],
-                                                                         one_bet["odds"][1],
-                                                                         one_bet["odds"][2],
-                                                                         one_bet["match"],
-                                                                         one_bet["bet_ids"],
-                                                                         one_bet["odds"][0],
-                                                                         one_bet["odds"][1],
-                                                                         one_bet["odds"][2],
-                                                                         one_bet["odds"][0],
-                                                                         one_bet["odds"][1],
-                                                                         one_bet["odds"][2]
-                                                                         )
-                if postgres_insert_query:
-                    self.cursor.execute(postgres_insert_query)
+            if len(one_bet["odds"]) == 3:
+                postgres_insert_query = """ INSERT INTO arbitrage.scrape(bookie, sport, competition, event_date, event_time, odds1, oddsx, odds2, team1, bet_id)
+                                                    VALUES ('{}','{}','{}','{}','{}',{}, {}, {},'{}',{}) ON CONFLICT (bet_id) DO UPDATE SET odds1={}, oddsx={}, odds2={};
+                                                """
+                postgres_insert_query = postgres_insert_query.format(self.bookie,
+                                                                     one_bet["sport"],
+                                                                     one_bet["competition"],
+                                                                     one_bet["date"],
+                                                                     one_bet["time"],
+                                                                     one_bet["odds"][0],
+                                                                     one_bet["odds"][1],
+                                                                     one_bet["odds"][2],
+                                                                     one_bet["match"],
+                                                                     one_bet["bet_ids"],
+                                                                     one_bet["odds"][0],
+                                                                     one_bet["odds"][1],
+                                                                     one_bet["odds"][2],
+                                                                     one_bet["odds"][0],
+                                                                     one_bet["odds"][1],
+                                                                     one_bet["odds"][2]
+                                                                     )
+            if postgres_insert_query:
+                self.cursor.execute(postgres_insert_query)
 
 
-                    self.connection.commit()
-                    count = self.cursor.rowcount
-                    print(count, "Record inserted successfully into mobile table")
-                else:
-                    pass
-
+                self.connection.commit()
+                count = self.cursor.rowcount
+                print(count, "Record inserted successfully into mobile table")
+            else:
+                pass
 
         except (Exception, psycopg2.Error) as error:
-            print("Error in update operation", error)
+            print("Error in insert operation", error)
 
     def close_connection(self):
         # closing database connection.
@@ -167,15 +171,15 @@ class Database:
             except (Exception, psycopg2.Error) as error:
                 print("Error in insert operation", error)
 
-        self.update_weekly_max(df.loc[df['margin'].idxmax()])
+        self.update_daily_max(df.loc[df['margin'].idxmax()])
 
-    def update_weekly_max(self, max_entry):
+    def update_daily_max(self, max_entry):
         date_today = datetime.date.today()
         current_week = date_today.isocalendar()[1]
         current_year = date_today.year
         start_of_week = datetime.datetime.strptime(f'{current_year}-{current_week}-1', "%Y-%W-%w")
         try:
-            postgres_select_query = f"select * from arbitrage.history where max_date > '{start_of_week.strftime('%Y-%m-%d')}'"
+            postgres_select_query = f"select * from arbitrage.history where max_date = '{date_today.strftime('%Y-%m-%d')}'"
             self.cursor.execute(postgres_select_query)
             query_result = self.cursor.fetchall()
             rows = np.array(query_result)

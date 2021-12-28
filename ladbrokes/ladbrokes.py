@@ -2,13 +2,16 @@ import os, sys
 sys.path.append(os.getenv("BOOKIE_PROCESSING"))
 from util.scraper import Scraper
 from util.translate_name import get_clean_name
+from util.util import *
 from bs4 import BeautifulSoup as bs
 from datetime import datetime
 import pandas as pd
 import time
-from selenium.webdriver.common.by import By
 
 class Ladbrokes(Scraper):
+    def __init__(self,url):
+        super().__init__(url, 'Ladbrokes')
+
     def load_all(self):
         i = 1
         time.sleep(5)
@@ -51,26 +54,6 @@ class Ladbrokes(Scraper):
         except:
             return match
 
-    def sort_order(self, matches, odds):
-        """
-            Make sure matches and odds are in alphabeticla order
-            :param matches:
-            :param odds:
-            :return:
-            """
-        if None in matches:
-            players = f'{matches[0]} v {matches[1]}'
-            return players, odds
-
-        else:
-            matches_sorted = sorted(matches)
-            if matches_sorted != matches:
-                odds = odds[::-1]
-
-            # format matches into one string
-            players = f'{matches_sorted[0]} v {matches_sorted[1]}'
-            return players, odds
-
     def get_odds(self, odds_soup):
         odds = []
         try:
@@ -100,50 +83,48 @@ class Ladbrokes(Scraper):
 
         for box in boxes[:15]:
             competition = box.find("div", {'class': 'accordion-left-side'}).text
-            print(competition)
             rows = box.find_all("div", {'class':'sport-card'})
 
             for row in rows:
                 date_time = row.find("div",{"class":"sport-card-left"}).text
                 datetime_object = datetime.strptime(date_time.strip(),'%H:%M %d %b')
 
+                # deal with players
                 players_soup = row.find('div',{'class':'sport-card-names odds-names-list'})
 
                 fst = players_soup.find('a', {'data-crlat':'EventFirstName'}).text
                 snd = players_soup.find('a', {'data-crlat':'EventSecondName'}).text
                 players = [fst, snd]
 
+                # deal with odds
                 odds_soup = row.find_all("span", class_="odds-price")
                 odds = self.get_odds(odds_soup)
-
                 if len(odds) == 0:
                     continue
 
                 elif len(odds) == 2 or len(odds) == 3:
                     odds_new = odds
 
+                match = self.format_player_names(players, sport)
+                match, odds = sort_order(match, odds_new)
 
-                print(len(odds))
-                players = self.format_player_names(players, sport)
+                # compute rest
+                date = datetime_object.strftime('%Y-%m-%d')
+                time = datetime_object.strftime('%H:%M:%S')
+                bet_id = int(row.get('data-eventid'))
 
-                players, odds = self.sort_order(players, odds_new)
-                matches.append(players)
-
+                matches.append(match)
                 odds_all.append(odds)
-                competitions.append(competition.split("-")[1])
+                competitions.append(competition)
                 sports.append(sport)
-                dates.append(datetime_object.strftime('%Y-%m-%d'))
-                times.append(datetime_object.strftime('%H:%M:%S'))
-                bet_ids.append(int(row.get('data-eventid')))
+                dates.append(date)
+                times.append(time)
+                bet_ids.append(bet_id)
+
+                self.db.insert_scrape_single({"sport":sport, "competition": competition, "match": match, "date": date, "time": time, "odds": odds,"bet_ids":bet_id})
 
 
-
-
-        print(len(competitions))
-        print(len(matches))
-        print(len(dates))
-        print(len(odds_all))
         df = pd.DataFrame({"sport":sports, "competition": competitions, "match": matches, "date": dates, "time": times, "odds": odds_all,"bet_ids":bet_ids})
 
-
+        self.close_browser()
         return df

@@ -5,8 +5,12 @@ from util.translate_name import get_clean_name
 from bs4 import BeautifulSoup as bs
 from datetime import datetime
 import pandas as pd
+from util.util import *
 
 class Nike(Scraper):
+    def __init__(self,url):
+        super().__init__(url, 'Nike')
+
     def load_all(self):
         while self.check_exists_by_xpath("//button[contains(text(),'Zobraziť viac')]"):
             try:
@@ -62,25 +66,7 @@ class Nike(Scraper):
             except:
                 return match
 
-    def sort_order(self, matches, odds):
-        """
-            Make sure matches and odds are in alphabeticla order
-            :param matches:
-            :param odds:
-            :return:
-            """
-        if None in matches:
-            players = f'{matches[0]} v {matches[1]}'
-            return players, odds
 
-        else:
-            matches_sorted = sorted(matches)
-            if matches_sorted != matches:
-                odds = odds[::-1]
-
-            # format matches into one string
-            players = f'{matches_sorted[0]} v {matches_sorted[1]}'
-            return players, odds
     def get_odds(self, odds_soup):
         try:
             return [float(o.text.replace(",", ".")) for o in odds_soup]
@@ -114,13 +100,12 @@ class Nike(Scraper):
             rows = box.find_all("div", class_ = "flex bet-view-prematch-row")
 
             for row in rows:
-                #print(row.find("div", class_ = "bet-table-left ellipsis").attrs["data-meta"])
-                #players = eval(row.find("div", class_ = "bet-table-left ellipsis").attrs["data-meta"])["participants"]
                 match_details = row.attrs
-                #players = eval(match_details["participants"])
-                _, bet_id, competition, players, date_time, _ = match_details["title"].split("|")
-                players = [p.strip() for p in players.split("vs")]
 
+                _, bet_id, competition, match, date_time, _ = match_details["title"].split("|")
+                match = [p.strip() for p in match.split("vs")]
+
+                # compute odds
                 odds_soup = row.find_all("span", class_="bet-center")
                 odds = self.get_odds(odds_soup)
 
@@ -134,27 +119,26 @@ class Nike(Scraper):
                     odds_new = [odds[0], odds[1], odds[2]]
 
                 datetime_object = datetime.strptime(date_time.strip(),'%d.%m.%Y %H:%M')
-                print(len(odds))
-                players = self.format_player_names(players, sport)
 
-                players, odds = self.sort_order(players, odds_new)
-                matches.append(players)
+                match = format_player_names(match, sport)
+                match, odds = sort_order(match, odds_new)
+
+                # compute remaining rows
+                competition = competition.split("-")[1]
+                date = datetime_object.strftime('%Y-%m-%d')
+                time = datetime_object.strftime('%H:%M:%S')
+                bet_id = int(bet_id.strip()[3:])
 
                 odds_all.append(odds)
-                competitions.append(competition.split("-")[1])
+                matches.append(match)
+                competitions.append(competition)
                 sports.append(sport)
-                dates.append(datetime_object.strftime('%Y-%m-%d'))
-                times.append(datetime_object.strftime('%H:%M:%S'))
-                bet_ids.append(int(bet_id.strip()[3:]))
+                dates.append(date)
+                times.append(time)
+                bet_ids.append(bet_id)
 
+                self.db.insert_scrape_single({"sport":sport, "competition": competition, "match": match, "date": date, "time": time, "odds": odds,"bet_ids":bet_id})
 
-
-
-        print(len(competitions))
-        print(len(matches))
-        print(len(dates))
-        print(len(odds_all))
         df = pd.DataFrame({"sport":sports, "competition": competitions, "match": matches, "date": dates, "time": times, "odds": odds_all,"bet_ids":bet_ids})
-
-
+        self.close_browser()
         return df

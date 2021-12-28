@@ -1,17 +1,19 @@
 from selenium.webdriver import Firefox
 from selenium.webdriver.firefox.options import Options
-import time, pickle
+import pickle
+from util.database import Database
 from selenium.common.exceptions import NoSuchElementException
-
 from abc import ABC,abstractmethod
 
 class Scraper(ABC):
-    def __init__(self, url):
+    def __init__(self, url, bookie):
         self.url = url
+        self.db = Database(bookie)
 
         options = Options()
-        options.headless = False
+        options.headless = True
         options.incognito = True
+        options.binary_location = "/usr/lib/firefox/firefox"
         self.browser = Firefox(options=options)
         self.browser.get(self.url)
 
@@ -45,6 +47,7 @@ class Scraper(ABC):
 
     def close_browser(self):
         self.browser.close()
+
 
     @abstractmethod
     def aktualizuj(self):

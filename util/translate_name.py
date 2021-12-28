@@ -10,8 +10,9 @@ def get_clean_name(name,sport):
     :return: tuple (english_name,player/team)
     """
     options = Options()
-    options.headless = False
+    options.headless = True
     options.incognito = True
+    options.binary_location = "/usr/lib/firefox/firefox"
     browser = Firefox(options=options)
 
     name = name.replace(" ",'+')
