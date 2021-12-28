@@ -90,7 +90,6 @@ class Ladbrokes(Scraper):
 
             for row in rows:
                 date_time = row.find("div",{"class":"sport-card-left"}).text
-                print(date_time)
                 datetime_object = datetime.strptime(date_time.strip(),'%H:%M %d %b')
                 datetime_now = datetime.now()
                 if datetime_object.month < datetime_now.month:

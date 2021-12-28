@@ -28,7 +28,6 @@ class Database:
     def insert_scrape_single(self, one_bet):
         try:
             postgres_insert_query = None
-            print(len(one_bet["odds"]))
             if len(one_bet["odds"]) == 2:
                 postgres_insert_query = """ INSERT INTO arbitrage.scrape(bookie, sport, competition, event_date, event_time, odds1, odds2, team1, bet_id)
                                                     VALUES ('{}','{}','{}','{}','{}', {}, {},'{}', {}) ON CONFLICT (bet_id) DO UPDATE SET odds1={}, odds2={};

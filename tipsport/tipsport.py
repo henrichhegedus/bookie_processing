@@ -51,7 +51,6 @@ class Tipsport(Scraper):
             else:
                 odds_list.append(float(odd.text.replace(",", ".")))
 
-        print(odds_list)
         if len(odds_list) == 5:
             new_odds_list = [odds_list[0], odds_list[2], odds_list[4]]
             return new_odds_list

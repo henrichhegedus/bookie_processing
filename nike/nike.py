@@ -42,7 +42,6 @@ class Nike(Scraper):
             pass
 
         match0_split = match[0].split("/")
-        print(match)
         # if 1 player is on a team
         if len(match0_split) == 1:
             try:
@@ -60,7 +59,6 @@ class Nike(Scraper):
             try:
                 fst = f'{self.abreviate_name_single(match0_split[0], sport)}/{self.abreviate_name_single(match0_split[1], sport)}'
                 snd = f'{self.abreviate_name_single(match1_split[0], sport)}/{self.abreviate_name_single(match1_split[1], sport)}'
-                print([fst, snd])
                 return [fst, snd]
 
             except:
