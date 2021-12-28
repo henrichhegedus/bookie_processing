@@ -82,12 +82,21 @@ class Ladbrokes(Scraper):
         sports = list()
 
         for box in boxes[:15]:
-            competition = box.find("div", {'class': 'accordion-left-side'}).text
+            try:
+                competition = box.find("div", {'class': 'accordion-left-side'}).text
+            except:
+                competition = "unknown"
             rows = box.find_all("div", {'class':'sport-card'})
 
             for row in rows:
                 date_time = row.find("div",{"class":"sport-card-left"}).text
+                print(date_time)
                 datetime_object = datetime.strptime(date_time.strip(),'%H:%M %d %b')
+                datetime_now = datetime.now()
+                if datetime_object.month < datetime_now.month:
+                    datetime_object = datetime_object.replace(year = datetime_now.year + 1)
+                else:
+                    datetime_object = datetime_object.replace(year = datetime_now.year)
 
                 # deal with players
                 players_soup = row.find('div',{'class':'sport-card-names odds-names-list'})
