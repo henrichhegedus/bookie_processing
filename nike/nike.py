@@ -120,7 +120,7 @@ class Nike(Scraper):
 
                 datetime_object = datetime.strptime(date_time.strip(),'%d.%m.%Y %H:%M')
 
-                match = format_player_names(match, sport)
+                match = self.format_player_names(match, sport)
                 match, odds = sort_order(match, odds_new)
 
                 # compute remaining rows
