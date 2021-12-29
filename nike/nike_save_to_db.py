@@ -1,7 +1,8 @@
-from nike import Nike
-import yaml
 import os, sys
 sys.path.append(os.getenv("BOOKIE_PROCESSING"))
+
+from nike import Nike
+import yaml
 
 stream = open(os.getenv("BOOKIE_PROCESSING")+"/nike/nike_sports.yaml", 'r')
 nike_sports = yaml.load(stream,Loader=yaml.FullLoader)

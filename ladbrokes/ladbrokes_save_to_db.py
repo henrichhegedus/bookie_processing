@@ -1,7 +1,8 @@
-from ladbrokes import Ladbrokes
-import yaml
 import os, sys
 sys.path.append(os.getenv("BOOKIE_PROCESSING"))
+
+from ladbrokes import Ladbrokes
+import yaml
 
 stream = open(os.getenv("BOOKIE_PROCESSING")+"/ladbrokes/ladbrokes_sports.yaml", 'r')
 sports = yaml.load(stream,Loader=yaml.FullLoader)

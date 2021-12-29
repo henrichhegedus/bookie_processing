@@ -1,9 +1,9 @@
+import os, sys
+sys.path.append(os.getenv("BOOKIE_PROCESSING"))
+
 from tipsport import Tipsport
 import time
 import yaml
-import sys
-import os
-sys.path.append(os.getenv("BOOKIE_PROCESSING"))
 
 stream = open(os.getenv("BOOKIE_PROCESSING")+"/tipsport/tipsport_sports.yaml", 'r')
 tipsport_sports = yaml.load(stream,Loader=yaml.FullLoader)
