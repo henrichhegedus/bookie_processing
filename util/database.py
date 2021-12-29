@@ -73,8 +73,6 @@ class Database:
 
 
                 self.connection.commit()
-                count = self.cursor.rowcount
-                print(count, "Record inserted successfully into mobile table")
             else:
                 pass
 
@@ -86,7 +84,6 @@ class Database:
         if self.connection:
             self.cursor.close()
             self.connection.close()
-            print("PostgreSQL connection is closed")
 
     def delete_arbs(self):
         try:
@@ -164,13 +161,42 @@ class Database:
 
 
                 self.connection.commit()
-                count = self.cursor.rowcount
-                print(count, "Record inserted successfully into mobile table")
 
             except (Exception, psycopg2.Error) as error:
                 print("Error in insert operation", error)
 
-        self.update_daily_max(df.loc[df['margin'].idxmax()])
+        self.add_positive_to_hist(df[df['margin']>1])
+
+    def add_positive_to_hist(self, db):
+        for i in range(len(db)):
+            date_today = datetime.date.today()
+            entry = db.iloc[i]
+            try:
+                postgres_insert_query = """ INSERT INTO arbitrage.history(date_observed, time_observed, sport, match, date, time, odds1, oddsx, odds2, margin, bookie1, bookiex, bookie2)
+                                                    VALUES ('{}','{}','{}','{}','{}','{}',{},{},{}, {}, '{}', '{}', '{}');
+                                                """
+                postgres_insert_query = postgres_insert_query.format(
+                    date_today.strftime('%Y-%m-%d'),
+                    date_today.strftime('%H:%M:%S'),
+                    entry["sport"],
+                    entry["match"],
+                    entry["date"],
+                    entry["time"],
+                    entry["odds1"],
+                    entry["oddsX"],
+                    entry["odds2"],
+                    entry["margin"],
+                    entry["bookie1"],
+                    entry["bookieX"],
+                    entry["bookie2"]
+                )
+                self.cursor.execute(postgres_insert_query)
+                self.connection.commit()
+
+            except (Exception, psycopg2.Error) as error:
+                print("Error in insert operation", error)
+
+
 
     def update_daily_max(self, max_entry):
         date_today = datetime.date.today()
@@ -186,7 +212,7 @@ class Database:
                 if rows[:,8] < max_entry['margin']:     #update entry for the week
                     # delete current max entry
                     try:
-                        postgres_remove_query = f"DELETE FROM arbitrage.history where max_date = {rows[:,0]}"
+                        postgres_remove_query = f"DELETE FROM arbitrage.history where max_date = {rows[0,0].strftime('%Y-%m-%d')}"
                         self.cursor.execute(postgres_remove_query)
 
                     except (Exception, psycopg2.Error) as error:
@@ -215,8 +241,6 @@ class Database:
                                                                     )
                 self.cursor.execute(postgres_insert_query)
                 self.connection.commit()
-                count = self.cursor.rowcount
-                print(count, "Record inserted successfully into mobile table")
 
             except (Exception, psycopg2.Error) as error:
                 print("Error in insert operation", error)
