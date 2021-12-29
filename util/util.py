@@ -15,5 +15,5 @@ def sort_order(matches, odds):
             odds = odds[::-1]
 
         # format matches into one string
-        match = f'{matches_sorted[0]} v {matches_sorted[1]}'
+        match = f'{matches_sorted[0]} v {matches_sorted[1]}'.replace("\'", "-")
         return match, odds
