@@ -1,0 +1,9 @@
+pyyaml
+selenium>=3.11
+datetime
+bs4
+pandas
+numpy
+abcplus
+psycopg2
+lxml
