@@ -1,4 +1,4 @@
-*/3 * * * * python3 /code/bookie_processing/nike/nike_save_to_db.py >> /var/log/cron.log 2>&1
-*/3 * * * * python3 /code/bookie_processing/tipsport/tipsport_save_to_db.py >> /var/log/cron.log 2>&1
-*/3 * * * * python3 /code/bookie_processing/ladbrokes/ladbrokes_save_to_db.py >> /var/log/cron.log 2>&1
-*/3 * * * * python3 /code/bookie_processing/util/scraper.py >> /var/log/cron.log 2>&1
+*/10 * * * * /code/bookie_processing/scripts/nike.sh >> /var/log/cron.log 2>&1
+*/10 * * * * /code/bookie_processing/scripts/ladbrokes.sh >> /var/log/cron.log 2>&1
+*/10 * * * * /code/bookie_processing/scripts/tipsport.sh >> /var/log/cron.log 2>&1
+*/10 * * * * /code/bookie_processing/scripts/findArb.sh >> /var/log/cron.log 2>&1
