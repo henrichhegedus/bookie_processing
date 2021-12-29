@@ -28,7 +28,7 @@ RUN set -x \
    && mv geckodriver /usr/bin/
 
 COPY . /code/bookie_processing/
-RUN chmod 0744 /code/bookie_processing/scripts/nike.sh
+RUN chmod -R 755 /code/bookie_processing/scripts
 ENV BOOKIE_PROCESSING=/code/bookie_processing
 ENV PYTHONPATH=/usr/bin/python
 
@@ -38,9 +38,5 @@ RUN chmod 0644 /etc/chron.d/cron #execution rights for chron job
 RUN crontab /etc/chron.d/cron    # apply chron job
 RUN touch /var/log/cron.log
 
-#CMD python3 /code/bookie_processing/ladbrokes/ladbrokes_save_to_db.py
+# launch cron jobs
 CMD cron && tail -f /var/log/cron.log
-#CMD python3 /code/bookie_processing/util/pkl_viewer.py
-
-#CMD ls /code/venv/bin/python3 /code/bookie_processing/util/pkl_viewer.py
-#CMD /code/bookie_processing/scripts/nike.sh
