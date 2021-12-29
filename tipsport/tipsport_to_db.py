@@ -13,4 +13,5 @@ for sport in tipsport_sports.keys():
     scraper = Tipsport(url)
     time.sleep(20)
     df = scraper.read_values(sport)
+    scraper.db.close_connection()
     df.to_csv(os.getenv("BOOKIE_PROCESSING")+f"/tipsport/data_log/tipsport_{sport}.csv")

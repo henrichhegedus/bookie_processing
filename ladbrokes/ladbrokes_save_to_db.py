@@ -12,4 +12,5 @@ for sport in sports.keys():
     scraper = Ladbrokes(url)
     scraper.load_all()
     df = scraper.read_values(sport)
+    scraper.db.close_connection()
     df.to_csv(os.getenv("BOOKIE_PROCESSING")+f"/ladbrokes/data_log/ladbrokes_{sport}.csv")
