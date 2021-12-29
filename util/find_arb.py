@@ -2,17 +2,13 @@ import pandas as pd
 import numpy as np
 import yaml
 from database import Database
-from tabulate import tabulate
 
 stream = open("util/db_config.yaml", 'r')
 db_config = yaml.load(stream,Loader=yaml.FullLoader)
 
 database = Database(db_config)
 scrape_data = database.get_scrape()
-print(scrape_data)
-print(tabulate(scrape_data, headers='keys', tablefmt='psql'))
-# find all bookies
-#bookies = set(scrape_data["bookie"])
+
 bookie_dicts = dict()
 sports = set()
 
@@ -64,7 +60,7 @@ for i in grouped_pairable.index:
 
 arbs = pd.DataFrame(arbs)
 arbs['oddsX'] = arbs['oddsX'].where(pd.notnull(arbs['oddsX']), None)
-print(tabulate(arbs, headers='keys', tablefmt='psql'))
+
 database.delete_arbs()
 database.insert_arbs_to_db(arbs)
 database.close_connection()
