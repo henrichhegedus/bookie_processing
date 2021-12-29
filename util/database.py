@@ -169,7 +169,7 @@ class Database:
 
     def add_positive_to_hist(self, db):
         for i in range(len(db)):
-            date_today = datetime.date.today()
+            date_today = datetime.datetime.now()
             entry = db.iloc[i]
             try:
                 postgres_insert_query = """ INSERT INTO arbitrage.history(date_observed, time_observed, sport, match, date, time, odds1, oddsx, odds2, margin, bookie1, bookiex, bookie2)
