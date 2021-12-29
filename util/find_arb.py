@@ -1,12 +1,8 @@
 import pandas as pd
 import numpy as np
-import yaml
 from database import Database
 
-stream = open("util/db_config.yaml", 'r')
-db_config = yaml.load(stream,Loader=yaml.FullLoader)
-
-database = Database(db_config)
+database = Database('arbitrage_finder')
 scrape_data = database.get_scrape()
 
 bookie_dicts = dict()
