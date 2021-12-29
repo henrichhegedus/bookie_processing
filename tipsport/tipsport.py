@@ -97,7 +97,7 @@ class Tipsport(Scraper):
 
                     if isinstance(match, list): # sometimes is not list and then we dont want to deal with it
                         if match[0] != None and match[1] != None:
-                            match, odds = self.sort_order(match, odds)
+                            match, odds = sort_order(match, odds)
                             time = datetime_object.strftime('%H:%M:%S')
                             date = datetime_object.strftime('%Y-%m-%d')
 
