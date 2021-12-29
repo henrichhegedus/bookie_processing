@@ -81,7 +81,7 @@ class Ladbrokes(Scraper):
         times = list()
         sports = list()
 
-        for box in boxes[:15]:
+        for box in boxes:
             try:
                 competition = box.find("div", {'class': 'accordion-left-side'}).text
             except:

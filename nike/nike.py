@@ -94,7 +94,7 @@ class Nike(Scraper):
         times = list()
         sports = list()
 
-        for box in boxes[:15]:
+        for box in boxes:
             rows = box.find_all("div", class_ = "flex bet-view-prematch-row")
 
             for row in rows:
