@@ -29,7 +29,7 @@ class Database:
         try:
             postgres_insert_query = None
             if len(one_bet["odds"]) == 2:
-                postgres_insert_query = """ INSERT INTO arbitrage.scrape(bookie, sport, competition, event_date, event_time, odds1, odds2, team1, bet_id)
+                postgres_insert_query = """ INSERT INTO public.scrape(bookie, sport, competition, event_date, event_time, odds1, odds2, match, bet_id)
                                                     VALUES ('{}','{}','{}','{}','{}', {}, {},'{}', {}) ON CONFLICT (bet_id) DO UPDATE SET odds1={}, odds2={};
                                                 """
                 postgres_insert_query = postgres_insert_query.format(self.bookie,
@@ -48,7 +48,7 @@ class Database:
                                                                      )
 
             if len(one_bet["odds"]) == 3:
-                postgres_insert_query = """ INSERT INTO arbitrage.scrape(bookie, sport, competition, event_date, event_time, odds1, oddsx, odds2, team1, bet_id)
+                postgres_insert_query = """ INSERT INTO public.scrape(bookie, sport, competition, event_date, event_time, odds1, oddsx, odds2, match, bet_id)
                                                     VALUES ('{}','{}','{}','{}','{}',{}, {}, {},'{}',{}) ON CONFLICT (bet_id) DO UPDATE SET odds1={}, oddsx={}, odds2={};
                                                 """
                 postgres_insert_query = postgres_insert_query.format(self.bookie,
@@ -87,7 +87,7 @@ class Database:
 
     def delete_arbs(self):
         try:
-            postgres_select_query = "DELETE FROM arbitrage.arbs"
+            postgres_select_query = "DELETE FROM public.arbs"
             self.cursor.execute(postgres_select_query)
 
         except (Exception, psycopg2.Error) as error:
@@ -95,7 +95,7 @@ class Database:
 
     def get_scrape(self):
         try:
-            postgres_select_query = "select * from arbitrage.scrape"
+            postgres_select_query = "select * from public.scrape"
             self.cursor.execute(postgres_select_query)
             query_result = self.cursor.fetchall()
             rows = np.array(query_result)
@@ -113,7 +113,7 @@ class Database:
             try:
                 one_arb = df.loc[i]
                 if one_arb['oddsX']:
-                    postgres_insert_query = """ INSERT INTO arbitrage.arbs(sport, match, date, time, odds1, oddsx, odds2, margin, bookie1, bookiex, bookie2)
+                    postgres_insert_query = """ INSERT INTO public.arbs(sport, match, date, time, odds1, oddsx, odds2, margin, bookie1, bookiex, bookie2)
                                                 VALUES ('{}','{}','{}','{}',{},{},{}, {}, '{}', '{}', '{}') ON CONFLICT (match,date) DO UPDATE SET odds1={}, oddsx={}, odds2={}, margin={},bookie1='{}',bookiex='{}',bookie2='{}';
                                             """
                     postgres_insert_query = postgres_insert_query.format(one_arb["sport"],
@@ -136,7 +136,7 @@ class Database:
                                                                          one_arb["bookie2"]
                                                                          )
                 else:
-                    postgres_insert_query = """ INSERT INTO arbitrage.arbs(sport, match, date, time, odds1, odds2, margin, bookie1, bookiex, bookie2)
+                    postgres_insert_query = """ INSERT INTO public.arbs(sport, match, date, time, odds1, odds2, margin, bookie1, bookiex, bookie2)
                                                 VALUES ('{}','{}','{}','{}',{}, {}, {}, '{}', '{}', '{}') ON CONFLICT (match,date) DO UPDATE SET odds1={}, odds2={}, margin={},bookie1='{}',bookie2='{}';
                                             """
                     postgres_insert_query = postgres_insert_query.format(one_arb["sport"],
@@ -172,7 +172,7 @@ class Database:
             date_today = datetime.datetime.now()
             entry = db.iloc[i]
             try:
-                postgres_insert_query = """ INSERT INTO arbitrage.history(date_observed, time_observed, sport, match, date, time, odds1, oddsx, odds2, margin, bookie1, bookiex, bookie2)
+                postgres_insert_query = """ INSERT INTO public.history(date_observed, time_observed, sport, match, date, time, odds1, oddsx, odds2, margin, bookie1, bookiex, bookie2)
                                                     VALUES ('{}','{}','{}','{}','{}','{}',{},{},{}, {}, '{}', '{}', '{}');
                                                 """
                 postgres_insert_query = postgres_insert_query.format(
@@ -204,7 +204,7 @@ class Database:
         current_year = date_today.year
         start_of_week = datetime.datetime.strptime(f'{current_year}-{current_week}-1', "%Y-%W-%w")
         try:
-            postgres_select_query = f"select * from arbitrage.history where max_date = '{date_today.strftime('%Y-%m-%d')}'"
+            postgres_select_query = f"select * from public.history where max_date = '{date_today.strftime('%Y-%m-%d')}'"
             self.cursor.execute(postgres_select_query)
             query_result = self.cursor.fetchall()
             rows = np.array(query_result)
@@ -212,7 +212,7 @@ class Database:
                 if rows[:,8] < max_entry['margin']:     #update entry for the week
                     # delete current max entry
                     try:
-                        postgres_remove_query = f"DELETE FROM arbitrage.history where max_date = {rows[0,0].strftime('%Y-%m-%d')}"
+                        postgres_remove_query = f"DELETE FROM public.history where max_date = {rows[0,0].strftime('%Y-%m-%d')}"
                         self.cursor.execute(postgres_remove_query)
 
                     except (Exception, psycopg2.Error) as error:
@@ -222,7 +222,7 @@ class Database:
 
             # insert new max entry
             try:
-                postgres_insert_query = """ INSERT INTO arbitrage.history(max_date, sport, match, date, time, odds1, oddsx, odds2, margin, bookie1, bookiex, bookie2)
+                postgres_insert_query = """ INSERT INTO public.history(max_date, sport, match, date, time, odds1, oddsx, odds2, margin, bookie1, bookiex, bookie2)
                                                     VALUES ('{}','{}','{}','{}','{}',{},{},{}, {}, '{}', '{}', '{}');
                                                 """
                 postgres_insert_query = postgres_insert_query.format(
